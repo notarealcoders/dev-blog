@@ -201,7 +201,7 @@ export default async function BlogPost({
 
               <div className="relative h-[400px] mb-8 rounded-lg overflow-hidden">
                 <Image
-                  src={post.image}
+                  src={post.image || "/images/placeholder.jpg"}
                   alt={post.title}
                   fill
                   className="object-cover"
