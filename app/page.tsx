@@ -7,8 +7,14 @@ import TopicsCloud from "@/app/components/TopicsCloud";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { Pagination } from "@/components/ui/pagination";
+import PostsGrid from "./components/PostsGrid";
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const posts = getSortedPostsData();
   const featuredPosts = posts
     .filter((post) => post.featured === true)
@@ -23,8 +29,11 @@ export default function Home() {
     )
     .slice(0, 3);
 
+  const totalPages = Math.ceil(posts.length / 10);
+  const validatedPage = searchParams.page ? parseInt(searchParams.page) : 1;
+
   return (
-    <main>
+    <main className="container mx-auto px-4 py-12">
       {/* Hero Section */}
       <section className="py-20 bg-muted">
         <div className="container mx-auto px-4 text-center">
@@ -98,41 +107,6 @@ export default function Home() {
 
       {/* Newsletter */}
       <Newsletter />
-
-      {/* Stats Section */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">
-                {posts.length}
-              </div>
-              <div className="text-muted-foreground">Articles</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">
-                {featuredAuthors.length}
-              </div>
-              <div className="text-muted-foreground">Authors</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">
-                {
-                  Array.from(new Set(posts.flatMap((post) => post.tags || [])))
-                    .length
-                }
-              </div>
-              <div className="text-muted-foreground">Topics</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">
-                {Array.from(new Set(posts.map((post) => post.category))).length}
-              </div>
-              <div className="text-muted-foreground">Categories</div>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

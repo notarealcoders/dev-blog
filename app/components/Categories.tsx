@@ -1,29 +1,29 @@
 import Link from "next/link";
-import { Code, Layout, Server, Cpu } from "lucide-react";
+import { FaCode, FaPalette, FaServer, FaMicrochip } from "react-icons/fa";
 
 const categories = [
   {
     name: "Web Development",
     description: "Frontend frameworks, responsive design, and modern web APIs",
-    icon: Code,
+    icon: FaCode,
     color: "text-blue-500",
   },
   {
     name: "UI/UX Design",
     description: "User interface design, accessibility, and user experience",
-    icon: Layout,
+    icon: FaPalette,
     color: "text-purple-500",
   },
   {
     name: "Backend",
     description: "Server-side programming, APIs, and databases",
-    icon: Server,
+    icon: FaServer,
     color: "text-green-500",
   },
   {
     name: "DevOps",
     description: "Deployment, CI/CD, and cloud infrastructure",
-    icon: Cpu,
+    icon: FaMicrochip,
     color: "text-orange-500",
   },
 ];
@@ -43,7 +43,7 @@ export default function Categories() {
                 className="group p-6 bg-background rounded-lg border hover:border-primary transition-colors"
               >
                 <Icon
-                  className={`w-8 h-8 mb-4 ${category.color} group-hover:scale-110 transition-transform`}
+                  className={`w-8 h-8 ${category.color} group-hover:scale-110 transition-transform`}
                 />
                 <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
                   {category.name}

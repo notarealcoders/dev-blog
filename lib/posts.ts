@@ -1,7 +1,6 @@
 import { Post, Author } from "./types";
-import { calculateReadingTime } from "./utils/readingTime";
-import matter from "gray-matter";
 import { paginateItems, PaginationResult } from "./utils/pagination";
+import { User } from "lucide-react";
 
 const DEFAULT_POST_IMAGE =
   "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=1200&h=630&fit=crop";
@@ -17,7 +16,7 @@ const author: Author = {
     linkedin: "johndoe",
   },
   expertise: ["Web Development", "JavaScript", "React"],
-  featured: false,
+  featured: true,
 };
 
 const janeSmith: Author = {
@@ -45,7 +44,7 @@ const sarahJohnson: Author = {
     linkedin: "sarahjohnson",
   },
   expertise: ["DevOps", "Cloud", "Automation"],
-  featured: false,
+  featured: true,
 };
 
 export const posts: Post[] = [
@@ -57,21 +56,22 @@ export const posts: Post[] = [
     slug: "building-modern-blog-nextjs-typescript",
     date: "2024-01-15T12:00:00Z",
     lastModified: "2024-01-20T15:30:00Z",
-    author: {
-      name: "John Doe",
-      bio: "Full-stack developer with 8+ years of experience. Passionate about React, TypeScript, and modern web development.",
-      avatar: "/authors/john-doe.jpg",
-      social: {
-        twitter: "johndoe",
-        github: "johndoe",
-        linkedin: "johndoe",
-        website: "https://johndoe.dev",
-      },
-      expertise: ["React", "TypeScript", "Next.js", "Node.js"],
-      role: "Senior Software Engineer",
-      company: "TechCorp",
-      featured: true,
-    },
+    author: author,
+    // {
+    //   name: "John Doe",
+    //   bio: "Full-stack developer with 8+ years of experience. Passionate about React, TypeScript, and modern web development.",
+    //   avatar: "/authors/john-doe.jpg",
+    //   social: {
+    //     twitter: "johndoe",
+    //     github: "johndoe",
+    //     linkedin: "johndoe",
+    //     website: "https://johndoe.dev",
+    //   },
+    //   expertise: ["React", "TypeScript", "Next.js", "Node.js"],
+    //   role: "Senior Software Engineer",
+    //   company: "TechCorp",
+    //   featured: true,
+    // },
     tags: ["nextjs", "typescript", "react", "tailwindcss", "markdown"],
     category: "Web Development",
     readingTime: 15,
@@ -1024,20 +1024,35 @@ export interface PostMetadata {
   image?: string;
   featured?: boolean;
   category?: string;
+  description?: string;
+  status?: string;
 }
 
 export function getSortedPostsData(): PostMetadata[] {
-  // For now, return the static posts array
-  return posts.map((post) => ({
-    slug: post.slug,
-    title: post.title,
-    excerpt: post.excerpt,
-    date: post.date,
-    author: post.author,
-    tags: post.tags,
-    readingTime: post.readingTime,
-    content: post.content,
-  }));
+  // Return the static posts array sorted by date
+  return posts
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      date: post.date,
+      author: post.author,
+      tags: post.tags,
+      readingTime: post.readingTime,
+      content: post.content,
+      image: post.image,
+      featured: post.featured,
+      category: post.category,
+      description: post.description,
+      status: post.status,
+    }))
+    .sort((a, b) => {
+      if (a.date < b.date) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
 }
 
 export function getPostData(slug: string): PostMetadata {
@@ -1047,37 +1062,91 @@ export function getPostData(slug: string): PostMetadata {
     throw new Error(`Post not found for slug: ${slug}`);
   }
 
-  const readingTime = calculateReadingTime(post.content);
-
-  // For now, we'll skip the matter parsing since we're using static data
-  // When you switch to markdown files, you'll use:
-  // const fileContents = fs.readFileSync(fullPath, 'utf8');
-  // const matterResult = matter(fileContents);
-
   return {
-    ...post,
-    readingTime,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    date: post.date,
+    author: post.author,
+    tags: post.tags,
+    readingTime: post.readingTime,
+    content: post.content,
+    image: post.image,
+    featured: post.featured,
+    category: post.category,
+    description: post.description,
+    status: post.status,
   };
 }
 
 export function getRelatedPosts(
   currentSlug: string,
-  tags: string[]
+  tags: string[] = []
 ): PostMetadata[] {
-  const allPosts = getSortedPostsData();
-  return allPosts
+  return posts
     .filter(
       (post) =>
         post.slug !== currentSlug &&
         post.tags?.some((tag) => tags.includes(tag))
     )
-    .slice(0, 3);
+    .slice(0, 3)
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      date: post.date,
+      author: post.author,
+      tags: post.tags,
+      readingTime: post.readingTime,
+      content: post.content,
+      image: post.image,
+      featured: post.featured,
+      category: post.category,
+      description: post.description,
+      status: post.status,
+    }));
 }
 
 export function getPaginatedPosts(
   page: number = 1,
   itemsPerPage: number = 6
 ): PaginationResult<PostMetadata> {
+  const sortedPosts = getSortedPostsData();
+  return paginateItems(sortedPosts, page, itemsPerPage);
+}
+
+export function getPaginatedPostsByTag(
+  tag: string,
+  page: number = 1,
+  itemsPerPage: number = 6
+): PaginationResult<PostMetadata> & { total: number } {
   const allPosts = getSortedPostsData();
-  return paginateItems(allPosts, page, itemsPerPage);
+  const filteredPosts = allPosts.filter((post) =>
+    post.tags?.some((t) => t.toLowerCase() === tag.toLowerCase())
+  );
+
+  const paginatedResult = paginateItems(filteredPosts, page, itemsPerPage);
+
+  return {
+    ...paginatedResult,
+    total: filteredPosts.length,
+  };
+}
+
+export function getPaginatedPostsByCategory(
+  category: string,
+  page: number = 1,
+  itemsPerPage: number = 6
+): PaginationResult<PostMetadata> & { total: number } {
+  const allPosts = getSortedPostsData();
+  const filteredPosts = allPosts.filter(
+    (post) => post.category?.toLowerCase() === category.toLowerCase()
+  );
+
+  const paginatedResult = paginateItems(filteredPosts, page, itemsPerPage);
+
+  return {
+    ...paginatedResult,
+    total: filteredPosts.length,
+  };
 }

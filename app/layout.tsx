@@ -1,15 +1,17 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
-import { MainNav } from '@/components/main-nav';
-import { Footer } from '@/components/footer';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { MainNav } from "@/components/main-nav";
+import { Footer } from "@/components/footer";
+import Favicon from "./components/Favicon";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'DevBlog - Web Development Insights',
-  description: 'A modern blog platform for web development insights and tutorials.',
+  title: "DevBlog - Web Development Insights",
+  description:
+    "A modern blog platform for web development insights and tutorials.",
 };
 
 export default function RootLayout({
@@ -19,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Favicon />
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"

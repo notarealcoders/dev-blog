@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Github, Twitter, Linkedin } from "lucide-react";
+import { Github, Twitter, Linkedin, CircleUserRound } from "lucide-react";
 import { Author } from "@/lib/types";
 
 export default function FeaturedAuthors({ authors }: { authors: Author[] }) {
@@ -15,13 +15,17 @@ export default function FeaturedAuthors({ authors }: { authors: Author[] }) {
               className="bg-background rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
             >
               <div className="flex items-center gap-4 mb-4">
-                <Image
-                  src={author.avatar}
-                  alt={author.name}
-                  width={64}
-                  height={64}
-                  className="rounded-full"
-                />
+                {author.avatar ? (
+                  <Image
+                    src={author.avatar}
+                    alt={author.name}
+                    width={64}
+                    height={64}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <CircleUserRound className="w-10 h-10 rounded-full" />
+                )}
                 <div>
                   <h3 className="font-semibold text-lg">{author.name}</h3>
                   <p className="text-sm text-muted-foreground">
